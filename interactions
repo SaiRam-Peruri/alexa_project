@@ -1,0 +1,114 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "acer",
+            "intents": [
+                {
+                    "name": "CheckCPUIntent",
+                    "slots": [],
+                    "samples": [
+                        "how busy is my processor",
+                        "what is my cpu usage",
+                        "tell me the cpu usage",
+                        "processor usage",
+                        "cpu status",
+                        "cpu percentage",
+                        "cpu load",
+                        "processor load",
+                        "what is cpu percent",
+                        "what is my c p u usage",
+                        "c p u percentage",
+                        "c p u usage"
+                    ]
+                },
+                {
+                    "name": "CheckMemoryIntent",
+                    "slots": [],
+                    "samples": [
+                        "how much memory is used",
+                        "memory usage",
+                        "what is my memory status",
+                        "ram usage",
+                        "how much ram is being used"
+                    ]
+                },
+                {
+                    "name": "CheckDiskIntent",
+                    "slots": [],
+                    "samples": [
+                        "how much disk space is left",
+                        "free storage",
+                        "what is the disk usage",
+                        "disk status",
+                        "storage left",
+                        "how much free space do I have"
+                    ]
+                },
+                {
+                    "name": "CheckAllStatusIntent",
+                    "slots": [],
+                    "samples": [
+                        "how is my laptop",
+                        "give me full system summary",
+                        "tell me system status",
+                        "check all system info",
+                        "laptop health summary"
+                    ]
+                },
+                {
+                    "name": "CheckUptimeIntent",
+                    "slots": [],
+                    "samples": [
+                        "how long has my system been running",
+                        "what is my uptime",
+                        "tell me uptime",
+                        "since when my laptop is on",
+                        "system running time"
+                    ]
+                },
+                {
+                    "name": "MetricQueryIntent",
+                    "slots": [
+                        {
+                            "name": "phrase",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "check {phrase}",
+                        "tell me {phrase}",
+                        "tell me about {phrase}",
+                        "what is {phrase}",
+                        "what is my {phrase}",
+                        "give me {phrase}",
+                        "show me {phrase}",
+                        "status for {phrase}",
+                        "what about {phrase}",
+                        "how much is {phrase}"
+                    ]
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                }
+            ],
+            "types": []
+        }
+    }
+}
