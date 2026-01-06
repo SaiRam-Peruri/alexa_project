@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 try:
-    from openai import OpenAI
+    import openai
 except ImportError:
     logger.warning("OpenAI module not found. AI responses will use fallback.")
     OpenAI = None
@@ -17,9 +17,9 @@ if not api_key:
     logger.error("OPENAI_API_KEY environment variable is not set.")
     client = None
 elif OpenAI is None:
-    client = None
+    openai.api_key = None
 else:
-    client = OpenAI(api_key=api_key)
+    openai.api_key = api_key
 
 app = Flask(__name__)
 latest_data = {}
@@ -27,7 +27,7 @@ latest_data = {}
 def speak(intent_name: str, context: str, fallback_text: str):
     try:
         # Call OpenAI API to generate a response
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that provides brief responses for an Alexa skill about laptop system monitoring."},
