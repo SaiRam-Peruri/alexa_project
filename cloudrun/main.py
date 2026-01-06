@@ -5,19 +5,14 @@ from flask import Flask, jsonify, request
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-try:
-    import openai
-except ImportError:
-    logger.warning("OpenAI module not found. AI responses will use fallback.")
-    OpenAI = None
+import openai
 
 # Set OpenAI API key from environment variable
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     logger.error("OPENAI_API_KEY environment variable is not set.")
-    client = None
-elif OpenAI is None:
-    openai.api_key = None
+else:
+    openai.api_key = api_key
 else:
     openai.api_key = api_key
 
