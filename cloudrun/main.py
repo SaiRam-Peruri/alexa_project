@@ -1,11 +1,12 @@
 import os, json, re, logging
 from flask import Flask, jsonify, request
+import openai
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-import openai
+
 
 # Set OpenAI API key from environment variable
 api_key = os.getenv("OPENAI_API_KEY")
