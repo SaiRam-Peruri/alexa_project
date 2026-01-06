@@ -1,16 +1,25 @@
 import os, json, re, logging
 from flask import Flask, jsonify, request
-import openai
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+try:
+    from openai import OpenAI
+except ImportError:
+    logger.warning("OpenAI module not found. AI responses will use fallback.")
+    OpenAI = None
 
 # Set OpenAI API key from environment variable
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     logger.error("OPENAI_API_KEY environment variable is not set.")
+    client = None
+elif OpenAI is None:
+    client = None
 else:
-    openai.api_key = api_key
+    client = OpenAI(api_key=api_key)
 
 app = Flask(__name__)
 latest_data = {}
@@ -18,7 +27,7 @@ latest_data = {}
 def speak(intent_name: str, context: str, fallback_text: str):
     try:
         # Call OpenAI API to generate a response
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that provides brief responses for an Alexa skill about laptop system monitoring."},
