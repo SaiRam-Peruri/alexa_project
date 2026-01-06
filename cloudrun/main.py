@@ -13,8 +13,6 @@ if not api_key:
     logger.error("OPENAI_API_KEY environment variable is not set.")
 else:
     openai.api_key = api_key
-else:
-    openai.api_key = api_key
 
 app = Flask(__name__)
 latest_data = {}
