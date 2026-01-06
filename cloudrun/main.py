@@ -1,6 +1,6 @@
 import os, json, re, logging
 from flask import Flask, jsonify, request
-# from openai import OpenAI  # Commented out - install with: pip install openai
+import openai
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ latest_data = {}
 def speak(intent_name: str, context: str, fallback_text: str):
     try:
         # Call OpenAI API to generate a response
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that provides brief responses for an Alexa skill about laptop system monitoring."},
