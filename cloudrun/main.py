@@ -5,9 +5,12 @@ from flask import Flask, jsonify, request
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI client (commented out until openai package is installed)
-# client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-client = None
+# Set OpenAI API key from environment variable
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    logger.error("OPENAI_API_KEY environment variable is not set.")
+else:
+    openai.api_key = api_key
 
 app = Flask(__name__)
 latest_data = {}
