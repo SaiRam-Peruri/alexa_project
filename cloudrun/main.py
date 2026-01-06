@@ -1,24 +1,14 @@
 import os, json, re, logging
 from flask import Flask, jsonify, request
 
-# Try to import OpenAI, handle gracefully if not available
-try:
-    from openai import OpenAI
-    OPENAI_AVAILABLE = True
-except ImportError:
-    OPENAI_AVAILABLE = False
-    OpenAI = None
+import openai
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI client if available
-if OPENAI_AVAILABLE:
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-else:
-    client = None
-    logger.warning("OpenAI package not available. AI responses will use fallback text.")
+# Set OpenAI API key from environment variable
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 latest_data = {}
