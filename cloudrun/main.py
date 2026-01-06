@@ -16,10 +16,7 @@ latest_data = {}
 def speak(intent_name: str, context: str, fallback_text: str):
     try:
         # Call OpenAI API to generate a response
-        if not OPENAI_AVAILABLE or client is None:
-            raise Exception("OpenAI client not available")
-            
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that provides brief responses for an Alexa skill about laptop system monitoring."},
