@@ -1,12 +1,24 @@
-import os, json, re, openai, logging
+import os, json, re, logging
 from flask import Flask, jsonify, request
+
+# Try to import OpenAI, handle gracefully if not available
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    OpenAI = None
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Set OpenAI API key from environment variable
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Initialize OpenAI client if available
+if OPENAI_AVAILABLE:
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+else:
+    client = None
+    logger.warning("OpenAI package not available. AI responses will use fallback text.")
 
 app = Flask(__name__)
 latest_data = {}
@@ -14,12 +26,18 @@ latest_data = {}
 def speak(intent_name: str, context: str, fallback_text: str):
     try:
         # Call OpenAI API to generate a response
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=f"Generate a response for the intent '{intent_name}' with context: {context}",
+        if not OPENAI_AVAILABLE or client is None:
+            raise Exception("OpenAI client not available")
+            
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that provides brief responses for an Alexa skill about laptop system monitoring."},
+                {"role": "user", "content": f"Generate a response for the intent '{intent_name}' with context: {context}"}
+            ],
             max_tokens=100
         )
-        ai_text = response.choices[0].text.strip()
+        ai_text = response.choices[0].message.content.strip()
 
         # Log the interaction
         logger.info(f"AI Response | Intent: {intent_name} | Context: {context} | Response: {ai_text}")
