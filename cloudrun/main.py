@@ -68,7 +68,11 @@ def alexa_handler():
 
     req_type = req.get("request", {}).get("type", "")
     if req_type == "LaunchRequest":
-        return speak("Hi! You can ask about CPU, memory, storage, uptime, or say laptop status.")
+        return speak(
+            intent_name="LaunchRequest",
+            context="User launched the skill.",
+            fallback_text="Hi! You can ask about CPU, memory, storage, uptime, or say laptop status."
+        )
 
     intent_obj = req.get("request", {}).get("intent", {}) or {}
     intent_name = intent_obj.get("name", "")
@@ -91,28 +95,72 @@ def alexa_handler():
             return x
 
     if not stats:
-        return speak("I don't have fresh laptop data yet. Please make sure the laptop monitor is running.")
+        return speak(
+            intent_name="NoDataIntent",
+            context="No fresh laptop data available.",
+            fallback_text="I don't have fresh laptop data yet. Please make sure the laptop monitor is running."
+        )
 
     # Helper to answer by metric
     def answer_cpu():
-        if cpu is None: return speak("I couldn't read CPU usage yet.")
-        return speak(f"Your CPU usage is {fnum(cpu)} percent.")
+        if cpu is None:
+            return speak(
+                intent_name="CheckCPUIntent",
+                context="CPU data is unavailable.",
+                fallback_text="I couldn't read CPU usage yet."
+            )
+        return speak(
+            intent_name="CheckCPUIntent",
+            context=f"CPU usage is {fnum(cpu)} percent.",
+            fallback_text=f"Your CPU usage is {fnum(cpu)} percent."
+        )
 
     def answer_mem():
-        if mem is None: return speak("I couldn't read memory usage yet.")
-        return speak(f"Your memory usage is {fnum(mem)} percent.")
+        if mem is None:
+            return speak(
+                intent_name="CheckMemoryIntent",
+                context="Memory data is unavailable.",
+                fallback_text="I couldn't read memory usage yet."
+            )
+        return speak(
+            intent_name="CheckMemoryIntent",
+            context=f"Memory usage is {fnum(mem)} percent.",
+            fallback_text=f"Your memory usage is {fnum(mem)} percent."
+        )
 
     def answer_disk():
-        if disk_free is None: return speak("I couldn't read disk information yet.")
-        return speak(f"You have {fnum(disk_free, 2)} gigabytes free on disk C.")
+        if disk_free is None:
+            return speak(
+                intent_name="CheckDiskIntent",
+                context="Disk data is unavailable.",
+                fallback_text="I couldn't read disk information yet."
+            )
+        return speak(
+            intent_name="CheckDiskIntent",
+            context=f"Disk C has {fnum(disk_free, 2)} gigabytes free.",
+            fallback_text=f"You have {fnum(disk_free, 2)} gigabytes free on disk C."
+        )
 
     def answer_uptime():
-        if uptime is None: return speak("I couldn't read uptime yet.")
-        return speak(f"Your laptop has been running for {uptime}.")
+        if uptime is None:
+            return speak(
+                intent_name="CheckUptimeIntent",
+                context="Uptime data is unavailable.",
+                fallback_text="I couldn't read uptime yet."
+            )
+        return speak(
+            intent_name="CheckUptimeIntent",
+            context=f"Laptop has been running for {uptime}.",
+            fallback_text=f"Your laptop has been running for {uptime}."
+        )
 
     # Built-in help
     if intent_name == "AMAZON.HelpIntent":
-        return speak("You can ask: CPU usage, memory usage, disk space left, uptime, or say full system summary.")
+        return speak(
+            intent_name="AMAZON.HelpIntent",
+            context="User asked for help.",
+            fallback_text="You can ask: CPU usage, memory usage, disk space left, uptime, or say full system summary."
+        )
 
     # Exact intents first
     if intent_name == "CheckCPUIntent":
@@ -125,7 +173,11 @@ def alexa_handler():
         return answer_disk()
 
     if intent_name == "CheckAllStatusIntent":
-        return speak(summary or "Here’s your status, but I couldn’t generate the full summary.")
+        return speak(
+            intent_name="CheckAllStatusIntent",
+            context="User requested full system status.",
+            fallback_text=summary or "Here’s your status, but I couldn’t generate the full summary."
+        )
 
     if intent_name == "CheckUptimeIntent":
         # SAFETY: If transcript clearly mentions CPU, override misroute.
@@ -158,7 +210,11 @@ def alexa_handler():
         if has_any(phrase_from_transcript, ["uptime", "running time", "how long", "since when"]):
             return answer_uptime()
 
-        return speak("I heard you, but I couldn't tell which metric you want. Try CPU, memory, disk, or uptime.")
+        return speak(
+            intent_name="MetricQueryIntent",
+            context="User query did not match any known metrics.",
+            fallback_text="I heard you, but I couldn't tell which metric you want. Try CPU, memory, disk, or uptime."
+        )
 
     # Fallback intent or anything else: try transcript rescue
     if intent_name in ("AMAZON.FallbackIntent", ""):
@@ -172,7 +228,11 @@ def alexa_handler():
             return answer_uptime()
 
     # Default
-    return speak("I'm not sure which detail you want. Try CPU usage, memory, storage, uptime, or laptop status.")
+    return speak(
+        intent_name="FallbackIntent",
+        context="User request did not match any known intents.",
+        fallback_text="I'm not sure which detail you want. Try CPU usage, memory, storage, uptime, or laptop status."
+    )
 
 @app.route("/update-system-info", methods=["POST"])
 def update_system_info():
