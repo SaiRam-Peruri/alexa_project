@@ -45,13 +45,6 @@ def speak(intent_name: str, context: str, fallback_text: str):
                 "shouldEndSession": True
             }
         })
-    return jsonify({
-        "version": "1.0",
-        "response": {
-            "outputSpeech": {"type": "PlainText", "text": text},
-            "shouldEndSession": True
-        }
-    })
 
 def normalize_phrase(text: str) -> str:
     if not text:
