@@ -1,10 +1,50 @@
-import os, json, re
+import os, json, re, openai, logging
 from flask import Flask, jsonify, request
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Set OpenAI API key from environment variable
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 latest_data = {}
 
-def speak(text: str):
+def speak(intent_name: str, context: str, fallback_text: str):
+    try:
+        # Call OpenAI API to generate a response
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=f"Generate a response for the intent '{intent_name}' with context: {context}",
+            max_tokens=100
+        )
+        ai_text = response.choices[0].text.strip()
+
+        # Log the interaction
+        logger.info(f"AI Response | Intent: {intent_name} | Context: {context} | Response: {ai_text}")
+
+        # Ensure the response is within Alexa's character limits
+        if len(ai_text) > 8000:
+            ai_text = ai_text[:8000]
+
+        return jsonify({
+            "version": "1.0",
+            "response": {
+                "outputSpeech": {"type": "PlainText", "text": ai_text},
+                "shouldEndSession": True
+            }
+        })
+    except Exception as e:
+        # Log the error and fallback to static response
+        logger.error(f"Error generating AI response: {e}")
+        return jsonify({
+            "version": "1.0",
+            "response": {
+                "outputSpeech": {"type": "PlainText", "text": fallback_text},
+                "shouldEndSession": True
+            }
+        })
     return jsonify({
         "version": "1.0",
         "response": {
